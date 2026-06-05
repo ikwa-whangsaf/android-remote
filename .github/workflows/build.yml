@@ -34,7 +34,7 @@ jobs:
 
           echo '<?xml version="1.0" encoding="utf-8"?><resources><style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar"><item name="android:windowBackground">#050a0f</item><item name="android:statusBarColor">#050a0f</item></style></resources>' > app/src/main/res/values/styles.xml
 
-          printf 'buildscript {\n    repositories {\n        google()\n        mavenCentral()\n    }\n    dependencies {\n        classpath "com.android.tools.build:gradle:8.2.0"\n    }\n}\n' > build.gradle
+          printf 'buildscript {\n    repositories {\n        google()\n        mavenCentral()\n    }\n    dependencies {\n        classpath "com.android.tools.build:gradle:8.2.0"\n    }\n}\n\nallprojects {\n    repositories {\n        google()\n        mavenCentral()\n    }\n}\n' > build.gradle
 
           printf 'apply plugin: "com.android.application"\n\nandroid {\n    namespace "com.remote.android"\n    compileSdkVersion 34\n    defaultConfig {\n        applicationId "com.remote.android"\n        minSdkVersion 26\n        targetSdkVersion 34\n        versionCode 1\n        versionName "1.0"\n    }\n    compileOptions {\n        sourceCompatibility JavaVersion.VERSION_1_8\n        targetCompatibility JavaVersion.VERSION_1_8\n    }\n}\n\ndependencies {\n    implementation "com.squareup.okhttp3:okhttp:4.12.0"\n    implementation "androidx.appcompat:appcompat:1.6.1"\n    implementation "androidx.core:core:1.12.0"\n}\n' > app/build.gradle
 
