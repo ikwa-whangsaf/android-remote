@@ -1,0 +1,12 @@
+{
+  "name": "android-remote-server",
+  "version": "2.0.0",
+  "description": "Remote control relay server - v2",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "ws": "^8.16.0"
+  }
+}

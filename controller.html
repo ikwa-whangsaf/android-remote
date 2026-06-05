@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>REMOTE · HP2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+
+  :root {
+    --cyan: #00f5ff;
+    --green: #00ff88;
+    --red: #ff3355;
+    --orange: #ff8800;
+    --yellow: #ffcc00;
+    --purple: #bf5fff;
+    --bg: #050a0f;
+    --surface: #0a1520;
+    --border: #0d2535;
+    --text: #b0d4e8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,245,255,0.015) 2px,
+      rgba(0,245,255,0.015) 4px
+    );
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  .header {
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .title {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 14px;
+    color: var(--cyan);
+    letter-spacing: 4px;
+    text-shadow: 0 0 15px var(--cyan);
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .receiver-badge {
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    border: 1px solid var(--border);
+    color: var(--red);
+    background: rgba(255,51,85,0.08);
+    transition: all 0.3s;
+  }
+  .receiver-badge.online {
+    color: var(--green);
+    border-color: var(--green);
+    background: rgba(0,255,136,0.08);
+  }
+
+  .status-dot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 8px var(--red);
+    transition: all 0.3s;
+  }
+  .dot.online { background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .container { padding: 16px; display: flex; flex-direction: column; gap: 14px; padding-bottom: 30px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan);
+  }
+
+  .card-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--cyan);
+    margin-bottom: 14px;
+    opacity: 0.7;
+  }
+
+  .input-group { margin-bottom: 10px; }
+  .input-label { font-size: 10px; letter-spacing: 2px; color: var(--text); opacity: 0.6; margin-bottom: 6px; display: block; }
+
+  input[type="text"] {
+    width: 100%;
+    background: rgba(0,245,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--cyan);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus { border-color: var(--cyan); box-shadow: 0 0 8px rgba(0,245,255,0.2); }
+
+  .btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 3px;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 4px;
+  }
+
+  .btn-primary {
+    background: transparent;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+  }
+  .btn-primary:hover, .btn-primary:active {
+    background: rgba(0,245,255,0.15);
+    box-shadow: 0 0 20px rgba(0,245,255,0.3);
+  }
+
+  /* Controls Grid */
+  .controls-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .ctrl-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 14px 10px;
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+    min-height: 80px;
+    justify-content: center;
+  }
+
+  .ctrl-btn:active { transform: scale(0.95); }
+
+  .ctrl-btn.on { border-color: var(--green); color: var(--green); box-shadow: inset 0 0 20px rgba(0,255,136,0.1), 0 0 10px rgba(0,255,136,0.2); }
+  .ctrl-btn.on-yellow { border-color: var(--yellow); color: var(--yellow); box-shadow: inset 0 0 20px rgba(255,204,0,0.1), 0 0 10px rgba(255,204,0,0.2); }
+  .ctrl-btn.on-orange { border-color: var(--orange); color: var(--orange); box-shadow: inset 0 0 20px rgba(255,136,0,0.1), 0 0 10px rgba(255,136,0,0.2); }
+  .ctrl-btn.on-purple { border-color: var(--purple); color: var(--purple); box-shadow: inset 0 0 20px rgba(191,95,255,0.1), 0 0 10px rgba(191,95,255,0.2); }
+  .ctrl-btn.danger { border-color: var(--red); color: var(--red); }
+  .ctrl-btn.danger:active { background: rgba(255,51,85,0.15); }
+
+  .ctrl-icon { font-size: 24px; }
+
+  /* torch sub-buttons */
+  .torch-group {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  .torch-group .ctrl-btn { min-height: 70px; }
+
+  /* camera group */
+  .cam-group {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  .cam-group .ctrl-btn { min-height: 70px; }
+
+  /* divider label */
+  .section-label {
+    grid-column: span 2;
+    font-size: 9px;
+    letter-spacing: 3px;
+    opacity: 0.4;
+    padding: 4px 0 2px;
+    border-bottom: 1px solid var(--border);
+    color: var(--cyan);
+    margin-top: 4px;
+  }
+
+  /* Status Panel */
+  .status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .stat-box {
+    background: rgba(0,245,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .stat-label { font-size: 9px; letter-spacing: 2px; opacity: 0.5; margin-bottom: 6px; }
+  .stat-value { font-family: 'Orbitron', monospace; font-size: 18px; color: var(--cyan); }
+  .stat-unit { font-size: 9px; opacity: 0.5; margin-top: 2px; }
+
+  /* Log */
+  .log-box {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 10px;
+    height: 120px;
+    overflow-y: auto;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+
+  .log-entry { opacity: 0.7; }
+  .log-entry.ok { color: var(--green); }
+  .log-entry.err { color: var(--red); }
+  .log-entry.info { color: var(--cyan); }
+  .log-entry.warn { color: var(--orange); }
+
+  .disabled { opacity: 0.3; pointer-events: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="title">ANDROID·REMOTE</div>
+  <div class="header-right">
+    <div class="receiver-badge" id="receiverBadge">HP2 OFFLINE</div>
+    <div class="status-dot">
+      <div class="dot" id="statusDot"></div>
+      <span id="statusText">OFFLINE</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Server Config -->
+  <div class="card">
+    <div class="card-title">// SERVER CONFIG</div>
+    <div class="input-group">
+      <span class="input-label">WEBSOCKET URL</span>
+      <input type="text" id="serverUrl" value="ws://64.235.61.136:4101" placeholder="ws://IP:PORT">
+    </div>
+    <button class="btn btn-primary" id="connectBtn" onclick="toggleConnect()">CONNECT</button>
+  </div>
+
+  <!-- Controls -->
+  <div class="card disabled" id="controlsCard">
+    <div class="card-title">// KONTROL HP2</div>
+    <div class="controls-grid">
+
+      <!-- SENTER SECTION -->
+      <div class="section-label">SENTER</div>
+
+      <div class="torch-group">
+        <button class="ctrl-btn off" id="torchBackBtn" onclick="toggleTorch('back')">
+          <span class="ctrl-icon">🔦</span>
+          <span id="torchBackLabel">BELAKANG</span>
+        </button>
+        <button class="ctrl-btn off" id="torchFrontBtn" onclick="toggleTorch('front')">
+          <span class="ctrl-icon">💡</span>
+          <span id="torchFrontLabel">DEPAN</span>
+        </button>
+        <button class="ctrl-btn" onclick="sendCommand('torchOff')">
+          <span class="ctrl-icon">⚫</span>
+          <span>OFF SEMUA</span>
+        </button>
+      </div>
+
+      <!-- KAMERA SECTION -->
+      <div class="section-label">KAMERA</div>
+
+      <div class="cam-group">
+        <button class="ctrl-btn" id="camBackBtn" onclick="toggleCamera('back')">
+          <span class="ctrl-icon">📷</span>
+          <span id="camBackLabel">CAM BLKNG</span>
+        </button>
+        <button class="ctrl-btn" id="camFrontBtn" onclick="toggleCamera('front')">
+          <span class="ctrl-icon">🤳</span>
+          <span id="camFrontLabel">CAM DEPAN</span>
+        </button>
+        <button class="ctrl-btn danger" onclick="sendCommand('camOff')">
+          <span class="ctrl-icon">🚫</span>
+          <span>TUTUP CAM</span>
+        </button>
+      </div>
+
+      <!-- SISTEM SECTION -->
+      <div class="section-label">SISTEM</div>
+
+      <button class="ctrl-btn" id="vibrateBtn" onclick="sendCommand('vibrate')">
+        <span class="ctrl-icon">📳</span>
+        <span>VIBRASI</span>
+      </button>
+
+      <button class="ctrl-btn" id="keepAwakeBtn" onclick="toggleKeepAwake()">
+        <span class="ctrl-icon">👁️</span>
+        <span id="keepAwakeLabel">KEEP AWAKE</span>
+      </button>
+
+      <button class="ctrl-btn danger" id="screenOffBtn" onclick="sendCommand('screenOff')">
+        <span class="ctrl-icon">🌑</span>
+        <span>LAYAR OFF</span>
+      </button>
+
+      <button class="ctrl-btn" id="refreshBtn" onclick="requestStatus()">
+        <span class="ctrl-icon">📡</span>
+        <span>REFRESH</span>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- Status HP2 -->
+  <div class="card disabled" id="statusCard">
+    <div class="card-title">// STATUS HP2</div>
+    <div class="status-grid">
+      <div class="stat-box">
+        <div class="stat-label">BATERAI</div>
+        <div class="stat-value" id="statBatt">--</div>
+        <div class="stat-unit">%</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">CHARGING</div>
+        <div class="stat-value" id="statCharge">--</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">PLATFORM</div>
+        <div class="stat-value" style="font-size:11px" id="statPlatform">--</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">KONEKSI</div>
+        <div class="stat-value" style="font-size:11px" id="statNet">--</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Log -->
+  <div class="card">
+    <div class="card-title">// LOG</div>
+    <div class="log-box" id="logBox"></div>
+  </div>
+
+</div>
+
+<script>
+  let ws = null;
+  let connected = false;
+  let receiverOnline = false;
+  let torchBackOn = false;
+  let torchFrontOn = false;
+  let camActive = null; // 'back' | 'front' | null
+  let keepAwakeOn = false;
+
+  function log(msg, type = 'info') {
+    const box = document.getElementById('logBox');
+    const t = new Date().toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const el = document.createElement('div');
+    el.className = 'log-entry ' + type;
+    el.textContent = `[${t}] ${msg}`;
+    box.appendChild(el);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function setStatus(online, text) {
+    const dot = document.getElementById('statusDot');
+    const txt = document.getElementById('statusText');
+    dot.className = 'dot' + (online ? ' online' : '');
+    txt.textContent = text;
+  }
+
+  function setReceiverOnline(online) {
+    receiverOnline = online;
+    const cards = ['controlsCard','statusCard'];
+    cards.forEach(id => {
+      document.getElementById(id).classList.toggle('disabled', !online);
+    });
+    const badge = document.getElementById('receiverBadge');
+    badge.textContent = online ? 'HP2 ONLINE' : 'HP2 OFFLINE';
+    badge.className = 'receiver-badge' + (online ? ' online' : '');
+    if (online) {
+      log('HP2 ONLINE — siap dikontrol', 'ok');
+      requestStatus();
+    } else {
+      log('HP2 OFFLINE', 'err');
+    }
+  }
+
+  function toggleConnect() {
+    if (connected) { ws.close(); return; }
+    const url = document.getElementById('serverUrl').value.trim();
+    log('Connecting ke ' + url + '...');
+    try { ws = new WebSocket(url); } catch(e) { log('URL tidak valid', 'err'); return; }
+
+    ws.onopen = () => {
+      connected = true;
+      setStatus(true, 'SERVER OK');
+      document.getElementById('connectBtn').textContent = 'DISCONNECT';
+      log('Server terhubung', 'ok');
+      ws.send(JSON.stringify({ type: 'register', role: 'controller' }));
+    };
+
+    ws.onmessage = (e) => {
+      let msg; try { msg = JSON.parse(e.data); } catch { return; }
+      if (msg.type === 'registered') log('Terdaftar sebagai CONTROLLER', 'ok');
+      if (msg.type === 'receiver_status') setReceiverOnline(msg.online);
+      if (msg.type === 'status') updateStatus(msg.data);
+      if (msg.type === 'response') log('HP2: ' + msg.msg, 'ok');
+      if (msg.type === 'error') log('ERROR: ' + msg.msg, 'err');
+    };
+
+    ws.onclose = () => {
+      connected = false; receiverOnline = false;
+      setStatus(false, 'OFFLINE');
+      setReceiverOnline(false);
+      document.getElementById('connectBtn').textContent = 'CONNECT';
+      log('Terputus dari server', 'err');
+    };
+
+    ws.onerror = () => log('Gagal connect ke server', 'err');
+  }
+
+  function sendCommand(action, data = {}) {
+    if (!ws || !connected) { log('Belum connect ke server', 'err'); return; }
+    if (!receiverOnline) { log('HP2 offline', 'err'); return; }
+    ws.send(JSON.stringify({ type: 'command', action, ...data }));
+    log('Kirim perintah: ' + action);
+  }
+
+  // ============ TORCH ============
+  function toggleTorch(facing) {
+    if (facing === 'back') {
+      torchBackOn = !torchBackOn;
+      if (torchBackOn) torchFrontOn = false; // matiin depan kalau nyalain belakang
+      sendCommand('torch', { facing: 'back', state: torchBackOn });
+      const btn = document.getElementById('torchBackBtn');
+      const lbl = document.getElementById('torchBackLabel');
+      btn.className = 'ctrl-btn ' + (torchBackOn ? 'on-yellow' : 'off');
+      lbl.textContent = torchBackOn ? 'BLKNG ON' : 'BELAKANG';
+      // reset depan UI
+      document.getElementById('torchFrontBtn').className = 'ctrl-btn off';
+      document.getElementById('torchFrontLabel').textContent = 'DEPAN';
+    } else {
+      torchFrontOn = !torchFrontOn;
+      if (torchFrontOn) torchBackOn = false;
+      sendCommand('torch', { facing: 'front', state: torchFrontOn });
+      const btn = document.getElementById('torchFrontBtn');
+      const lbl = document.getElementById('torchFrontLabel');
+      btn.className = 'ctrl-btn ' + (torchFrontOn ? 'on-yellow' : 'off');
+      lbl.textContent = torchFrontOn ? 'DEPAN ON' : 'DEPAN';
+      document.getElementById('torchBackBtn').className = 'ctrl-btn off';
+      document.getElementById('torchBackLabel').textContent = 'BELAKANG';
+    }
+  }
+
+  // ============ KAMERA ============
+  function toggleCamera(facing) {
+    if (camActive === facing) {
+      // close kamera
+      camActive = null;
+      sendCommand('camOff');
+      document.getElementById('camBackBtn').className = 'ctrl-btn';
+      document.getElementById('camBackLabel').textContent = 'CAM BLKNG';
+      document.getElementById('camFrontBtn').className = 'ctrl-btn';
+      document.getElementById('camFrontLabel').textContent = 'CAM DEPAN';
+    } else {
+      camActive = facing;
+      sendCommand('camera', { facing });
+      if (facing === 'back') {
+        document.getElementById('camBackBtn').className = 'ctrl-btn on-orange';
+        document.getElementById('camBackLabel').textContent = 'BLKNG ON';
+        document.getElementById('camFrontBtn').className = 'ctrl-btn';
+        document.getElementById('camFrontLabel').textContent = 'CAM DEPAN';
+      } else {
+        document.getElementById('camFrontBtn').className = 'ctrl-btn on-orange';
+        document.getElementById('camFrontLabel').textContent = 'DEPAN ON';
+        document.getElementById('camBackBtn').className = 'ctrl-btn';
+        document.getElementById('camBackLabel').textContent = 'CAM BLKNG';
+      }
+    }
+  }
+
+  // ============ KEEP AWAKE ============
+  function toggleKeepAwake() {
+    keepAwakeOn = !keepAwakeOn;
+    sendCommand('keepAwake', { state: keepAwakeOn });
+    const btn = document.getElementById('keepAwakeBtn');
+    const lbl = document.getElementById('keepAwakeLabel');
+    btn.className = 'ctrl-btn ' + (keepAwakeOn ? 'on-purple' : '');
+    lbl.textContent = keepAwakeOn ? 'AWAKE ON' : 'KEEP AWAKE';
+  }
+
+  function requestStatus() { sendCommand('getStatus'); }
+
+  function updateStatus(data) {
+    if (!data) return;
+    if (data.battery !== undefined) document.getElementById('statBatt').textContent = Math.round(data.battery);
+    if (data.charging !== undefined) document.getElementById('statCharge').textContent = data.charging ? 'YA' : 'TIDAK';
+    if (data.platform) document.getElementById('statPlatform').textContent = data.platform.substring(0,7).toUpperCase();
+    if (data.connection) document.getElementById('statNet').textContent = data.connection.toUpperCase();
+    log('Status HP2 diperbarui', 'ok');
+  }
+</script>
+</body>
+</html>
