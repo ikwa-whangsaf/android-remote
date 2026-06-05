@@ -30,15 +30,15 @@ jobs:
           [ -f gradle-wrapper.jar ] && mv gradle-wrapper.jar gradle/wrapper/
           [ -f proguard-rules.pro ] && mv proguard-rules.pro app/
 
-          echo '<?xml version="1.0" encoding="utf-8"?><resources><string name="app_name">RemoteHP</string><string name="admin_description">Device Admin</string><string name="channel_name">Remote Service</string><string name="channel_desc">Background service</string><string name="notif_title">RemoteHP Aktif</string><string name="notif_text">Menunggu perintah...</string></resources>' > app/src/main/res/values/strings.xml
+          echo '<?xml version="1.0" encoding="utf-8"?><resources><string name="app_name">RemoteHP</string><string name="admin_description">Device Admin</string><string name="channel_name">Remote Service</string><string name="channel_desc">Background</string><string name="notif_title">RemoteHP</string><string name="notif_text">Active</string></resources>' > app/src/main/res/values/strings.xml
 
-          echo '<?xml version="1.0" encoding="utf-8"?><resources><style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar"><item name="android:windowBackground">#050a0f</item><item name="android:statusBarColor">#050a0f</item></style></resources>' > app/src/main/res/values/styles.xml
+          echo '<?xml version="1.0" encoding="utf-8"?><resources><style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar"><item name="android:windowBackground">#050a0f</item></style></resources>' > app/src/main/res/values/styles.xml
 
-          printf 'buildscript {\n    repositories {\n        google()\n        mavenCentral()\n    }\n    dependencies {\n        classpath "com.android.tools.build:gradle:8.2.0"\n    }\n}\n\nallprojects {\n    repositories {\n        google()\n        mavenCentral()\n    }\n}\n' > build.gradle
+          printf 'buildscript {\n    repositories { google(); mavenCentral() }\n    dependencies { classpath "com.android.tools.build:gradle:8.2.0" }\n}\nallprojects {\n    repositories { google(); mavenCentral() }\n}\n' > build.gradle
 
-          printf 'apply plugin: "com.android.application"\n\nandroid {\n    namespace "com.remote.android"\n    compileSdkVersion 34\n    defaultConfig {\n        applicationId "com.remote.android"\n        minSdkVersion 26\n        targetSdkVersion 34\n        versionCode 1\n        versionName "1.0"\n    }\n    compileOptions {\n        sourceCompatibility JavaVersion.VERSION_1_8\n        targetCompatibility JavaVersion.VERSION_1_8\n    }\n}\n\ndependencies {\n    implementation "com.squareup.okhttp3:okhttp:4.12.0"\n    implementation "androidx.appcompat:appcompat:1.6.1"\n    implementation "androidx.core:core:1.12.0"\n}\n' > app/build.gradle
+          printf 'apply plugin: "com.android.application"\nandroid {\n    namespace "com.remote.android"\n    compileSdkVersion 34\n    defaultConfig {\n        applicationId "com.remote.android"\n        minSdkVersion 26\n        targetSdkVersion 34\n        versionCode 1\n        versionName "1.0"\n    }\n    compileOptions {\n        sourceCompatibility JavaVersion.VERSION_1_8\n        targetCompatibility JavaVersion.VERSION_1_8\n    }\n}\ndependencies {\n    implementation "com.squareup.okhttp3:okhttp:4.12.0"\n    implementation "androidx.appcompat:appcompat:1.6.1"\n    implementation "androidx.core:core:1.12.0"\n}\n' > app/build.gradle
 
-          printf 'pluginManagement {\n    repositories {\n        google()\n        mavenCentral()\n        gradlePluginPortal()\n    }\n}\nrootProject.name = "AndroidRemote"\ninclude ":app"\n' > settings.gradle
+          printf 'include ":app"\nrootProject.name = "AndroidRemote"\n' > settings.gradle
 
           curl -L "https://github.com/gradle/gradle/raw/v8.4.0/gradle/wrapper/gradle-wrapper.jar" -o gradle/wrapper/gradle-wrapper.jar
 
