@@ -40,6 +40,8 @@ jobs:
 
           printf 'include ":app"\nrootProject.name = "AndroidRemote"\n' > settings.gradle
 
+          printf 'android.useAndroidX=true\nandroid.enableJetifier=true\n' > gradle.properties
+
           curl -L "https://github.com/gradle/gradle/raw/v8.4.0/gradle/wrapper/gradle-wrapper.jar" -o gradle/wrapper/gradle-wrapper.jar
 
           find . -not -path './.git/*' -type f | sort
