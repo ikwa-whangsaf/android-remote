@@ -20,111 +20,27 @@ jobs:
           mkdir -p app/src/main/res/values
           mkdir -p gradle/wrapper
 
-          [ -f MainActivity.java ]    && mv MainActivity.java    app/src/main/java/com/remote/android/
-          [ -f RemoteService.java ]   && mv RemoteService.java   app/src/main/java/com/remote/android/
-          [ -f AdminReceiver.java ]   && mv AdminReceiver.java   app/src/main/java/com/remote/android/
-          [ -f BootReceiver.java ]    && mv BootReceiver.java    app/src/main/java/com/remote/android/
-          [ -f AndroidManifest.xml ]  && mv AndroidManifest.xml  app/src/main/
-          [ -f device_admin.xml ]     && mv device_admin.xml     app/src/main/res/xml/
+          [ -f MainActivity.java ] && mv MainActivity.java app/src/main/java/com/remote/android/
+          [ -f RemoteService.java ] && mv RemoteService.java app/src/main/java/com/remote/android/
+          [ -f AdminReceiver.java ] && mv AdminReceiver.java app/src/main/java/com/remote/android/
+          [ -f BootReceiver.java ] && mv BootReceiver.java app/src/main/java/com/remote/android/
+          [ -f AndroidManifest.xml ] && mv AndroidManifest.xml app/src/main/
+          [ -f device_admin.xml ] && mv device_admin.xml app/src/main/res/xml/
           [ -f gradle-wrapper.properties ] && mv gradle-wrapper.properties gradle/wrapper/
-          [ -f gradle-wrapper.jar ]        && mv gradle-wrapper.jar        gradle/wrapper/
-          [ -f proguard-rules.pro ]        && mv proguard-rules.pro        app/
+          [ -f gradle-wrapper.jar ] && mv gradle-wrapper.jar gradle/wrapper/
+          [ -f proguard-rules.pro ] && mv proguard-rules.pro app/
 
-          cat > app/src/main/res/values/strings.xml << 'EOF'
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">RemoteHP</string>
-    <string name="admin_description">Diperlukan untuk fitur layar mati beneran</string>
-    <string name="channel_name">Remote Service</string>
-    <string name="channel_desc">Service berjalan di background</string>
-    <string name="notif_title">RemoteHP Aktif</string>
-    <string name="notif_text">Menunggu perintah dari controller...</string>
-</resources>
-EOF
+          echo '<?xml version="1.0" encoding="utf-8"?><resources><string name="app_name">RemoteHP</string><string name="admin_description">Device Admin</string><string name="channel_name">Remote Service</string><string name="channel_desc">Background service</string><string name="notif_title">RemoteHP Aktif</string><string name="notif_text">Menunggu perintah...</string></resources>' > app/src/main/res/values/strings.xml
 
-          cat > app/src/main/res/values/styles.xml << 'EOF'
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowBackground">#050a0f</item>
-        <item name="android:statusBarColor">#050a0f</item>
-        <item name="android:navigationBarColor">#050a0f</item>
-    </style>
-</resources>
-EOF
+          echo '<?xml version="1.0" encoding="utf-8"?><resources><style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar"><item name="android:windowBackground">#050a0f</item><item name="android:statusBarColor">#050a0f</item></style></resources>' > app/src/main/res/values/styles.xml
 
-          cat > settings.gradle << 'EOF'
-pluginManagement {
-    repositories {
-        google()
-        mavenCentral()
-        gradlePluginPortal()
-    }
-}
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-rootProject.name = "AndroidRemote"
-include ':app'
-EOF
+          echo 'buildscript { repositories { google(); mavenCentral() }; dependencies { classpath "com.android.tools.build:gradle:8.2.0" } }' > build.gradle
 
-          cat > build.gradle << 'EOF'
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.2.0'
-    }
-}
-EOF
+          printf 'apply plugin: "com.android.application"\nandroid { namespace "com.remote.android"; compileSdkVersion 34; defaultConfig { applicationId "com.remote.android"; minSdkVersion 26; targetSdkVersion 34; versionCode 1; versionName "1.0" }; compileOptions { sourceCompatibility JavaVersion.VERSION_1_8; targetCompatibility JavaVersion.VERSION_1_8 } }\nrepositories { google(); mavenCentral() }\ndependencies { implementation "com.squareup.okhttp3:okhttp:4.12.0"; implementation "androidx.appcompat:appcompat:1.6.1"; implementation "androidx.core:core:1.12.0" }' > app/build.gradle
 
-          cat > app/build.gradle << 'EOF'
-apply plugin: 'com.android.application'
+          printf 'pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }\ndependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }\nrootProject.name = "AndroidRemote"\ninclude ":app"' > settings.gradle
 
-android {
-    namespace 'com.remote.android'
-    compileSdkVersion 34
-
-    defaultConfig {
-        applicationId "com.remote.android"
-        minSdkVersion 26
-        targetSdkVersion 34
-        versionCode 1
-        versionName "1.0"
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-}
-
-repositories {
-    google()
-    mavenCentral()
-}
-
-dependencies {
-    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.core:core:1.12.0'
-}
-EOF
-
-          curl -L "https://github.com/gradle/gradle/raw/v8.4.0/gradle/wrapper/gradle-wrapper.jar" \
-               -o gradle/wrapper/gradle-wrapper.jar
+          curl -L "https://github.com/gradle/gradle/raw/v8.4.0/gradle/wrapper/gradle-wrapper.jar" -o gradle/wrapper/gradle-wrapper.jar
 
           find . -not -path './.git/*' -type f | sort
 
