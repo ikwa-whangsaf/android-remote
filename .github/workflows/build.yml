@@ -126,7 +126,6 @@ EOF
           curl -L "https://github.com/gradle/gradle/raw/v8.4.0/gradle/wrapper/gradle-wrapper.jar" \
                -o gradle/wrapper/gradle-wrapper.jar
 
-          echo "=== Struktur ==="
           find . -not -path './.git/*' -type f | sort
 
       - name: Set up JDK 17
