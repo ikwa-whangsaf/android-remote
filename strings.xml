@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">RemoteHP</string>
+    <string name="admin_description">Diperlukan untuk fitur layar mati beneran via Device Admin</string>
+    <string name="channel_name">Remote Service</string>
+    <string name="channel_desc">Service berjalan di background untuk menerima perintah remote</string>
+    <string name="notif_title">RemoteHP Aktif</string>
+    <string name="notif_text">Menunggu perintah dari controller...</string>
+</resources>
