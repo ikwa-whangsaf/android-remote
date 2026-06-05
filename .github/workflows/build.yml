@@ -1,0 +1,108 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup project structure
+        run: |
+          mkdir -p app/src/main/java/com/remote/android
+          mkdir -p app/src/main/res/xml
+          mkdir -p app/src/main/res/values
+          mkdir -p gradle/wrapper
+
+          [ -f MainActivity.java ]    && mv MainActivity.java    app/src/main/java/com/remote/android/
+          [ -f RemoteService.java ]   && mv RemoteService.java   app/src/main/java/com/remote/android/
+          [ -f AdminReceiver.java ]   && mv AdminReceiver.java   app/src/main/java/com/remote/android/
+          [ -f BootReceiver.java ]    && mv BootReceiver.java    app/src/main/java/com/remote/android/
+
+          [ -f AndroidManifest.xml ] && mv AndroidManifest.xml  app/src/main/
+          [ -f device_admin.xml ]    && mv device_admin.xml     app/src/main/res/xml/
+
+          [ -f "gradle-wrapper.properties" ] && mv gradle-wrapper.properties gradle/wrapper/
+          [ -f "gradle-wrapper.jar" ]        && mv gradle-wrapper.jar        gradle/wrapper/
+          [ -f proguard-rules.pro ]          && mv proguard-rules.pro        app/
+
+          cat > app/src/main/res/values/strings.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <string name="app_name">RemoteHP</string>
+              <string name="admin_description">Diperlukan untuk fitur layar mati beneran</string>
+              <string name="channel_name">Remote Service</string>
+              <string name="channel_desc">Service berjalan di background</string>
+              <string name="notif_title">RemoteHP Aktif</string>
+              <string name="notif_text">Menunggu perintah dari controller...</string>
+          </resources>
+          EOF
+
+          cat > app/src/main/res/values/styles.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar">
+                  <item name="android:windowBackground">#050a0f</item>
+                  <item name="android:statusBarColor">#050a0f</item>
+                  <item name="android:navigationBarColor">#050a0f</item>
+              </style>
+          </resources>
+          EOF
+
+          cat > build.gradle << 'EOF'
+          plugins {
+              id 'com.android.application' version '8.2.0' apply false
+          }
+          EOF
+
+          cat > settings.gradle << 'EOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = "AndroidRemote"
+          include ':app'
+          EOF
+
+          curl -L "https://github.com/gradle/gradle/raw/v8.4.0/gradle/wrapper/gradle-wrapper.jar" \
+               -o gradle/wrapper/gradle-wrapper.jar
+
+          find . -not -path './.git/*' -type f | sort
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-remote-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7
