@@ -34,11 +34,11 @@ jobs:
 
           echo '<?xml version="1.0" encoding="utf-8"?><resources><style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar"><item name="android:windowBackground">#050a0f</item><item name="android:statusBarColor">#050a0f</item></style></resources>' > app/src/main/res/values/styles.xml
 
-          echo 'buildscript { repositories { google(); mavenCentral() }; dependencies { classpath "com.android.tools.build:gradle:8.2.0" } }' > build.gradle
+          printf 'buildscript {\n    repositories {\n        google()\n        mavenCentral()\n    }\n    dependencies {\n        classpath "com.android.tools.build:gradle:8.2.0"\n    }\n}\n' > build.gradle
 
-          printf 'apply plugin: "com.android.application"\nandroid { namespace "com.remote.android"; compileSdkVersion 34; defaultConfig { applicationId "com.remote.android"; minSdkVersion 26; targetSdkVersion 34; versionCode 1; versionName "1.0" }; compileOptions { sourceCompatibility JavaVersion.VERSION_1_8; targetCompatibility JavaVersion.VERSION_1_8 } }\nrepositories { google(); mavenCentral() }\ndependencies { implementation "com.squareup.okhttp3:okhttp:4.12.0"; implementation "androidx.appcompat:appcompat:1.6.1"; implementation "androidx.core:core:1.12.0" }' > app/build.gradle
+          printf 'apply plugin: "com.android.application"\n\nandroid {\n    namespace "com.remote.android"\n    compileSdkVersion 34\n    defaultConfig {\n        applicationId "com.remote.android"\n        minSdkVersion 26\n        targetSdkVersion 34\n        versionCode 1\n        versionName "1.0"\n    }\n    compileOptions {\n        sourceCompatibility JavaVersion.VERSION_1_8\n        targetCompatibility JavaVersion.VERSION_1_8\n    }\n}\n\ndependencies {\n    implementation "com.squareup.okhttp3:okhttp:4.12.0"\n    implementation "androidx.appcompat:appcompat:1.6.1"\n    implementation "androidx.core:core:1.12.0"\n}\n' > app/build.gradle
 
-          printf 'pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }\ndependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }\nrootProject.name = "AndroidRemote"\ninclude ":app"' > settings.gradle
+          printf 'pluginManagement {\n    repositories {\n        google()\n        mavenCentral()\n        gradlePluginPortal()\n    }\n}\nrootProject.name = "AndroidRemote"\ninclude ":app"\n' > settings.gradle
 
           curl -L "https://github.com/gradle/gradle/raw/v8.4.0/gradle/wrapper/gradle-wrapper.jar" -o gradle/wrapper/gradle-wrapper.jar
 
