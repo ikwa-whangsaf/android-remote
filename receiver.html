@@ -3,645 +3,376 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>RECEIVER · HP2</title>
+<title>IKWANEWERA · RECEIVER</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&family=Syne:wght@700;800&display=swap');
+:root {
+  --p1: #9b4dff; --p2: #c084fc; --p3: #7c3aed;
+  --bg: #07050f; --s1: #110d1f; --s2: #1a1330;
+  --border: #2a1f45; --text: #d4c8f0; --muted: #6b5a8a;
+  --green: #4ade80; --red: #f87171; --yellow: #fbbf24;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow: hidden; }
 
-  :root {
-    --cyan: #00f5ff;
-    --green: #00ff88;
-    --red: #ff3355;
-    --orange: #ff8800;
-    --yellow: #ffcc00;
-    --bg: #050a0f;
-    --surface: #0a1520;
-    --border: #0d2535;
-    --text: #b0d4e8;
-  }
+/* Background fx */
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(124,58,237,0.25) 0%, transparent 70%),
+              radial-gradient(ellipse 50% 40% at 90% 90%, rgba(155,77,255,0.12) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+body::after {
+  content: ''; position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(155,77,255,0.03) 60px, rgba(155,77,255,0.03) 61px),
+              repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(155,77,255,0.03) 60px, rgba(155,77,255,0.03) 61px);
+  pointer-events: none; z-index: 0;
+}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+.panel { width: 100%; max-width: 400px; position: relative; z-index: 1; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Share Tech Mono', monospace;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
+/* Header */
+.brand { text-align: center; margin-bottom: 24px; }
+.brand-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 28px; letter-spacing: 6px; background: linear-gradient(135deg, var(--p1), var(--p2), #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.brand-sub { font-size: 10px; letter-spacing: 5px; color: var(--muted); margin-top: 4px; text-transform: uppercase; }
 
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg, transparent, transparent 2px,
-      rgba(0,245,255,0.015) 2px, rgba(0,245,255,0.015) 4px
-    );
-    pointer-events: none;
-    z-index: 9999;
-  }
+/* Card */
+.card { background: var(--s1); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 12px; position: relative; overflow: hidden; }
+.card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--p1), transparent); opacity: 0.6; }
 
-  .panel {
-    width: 100%;
-    max-width: 380px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    overflow: hidden;
-  }
+.card-title { font-size: 9px; letter-spacing: 4px; color: var(--muted); text-transform: uppercase; margin-bottom: 14px; }
 
-  .panel-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+/* Status badge */
+.status-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.status-badge { display: flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 2px; color: var(--muted); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); box-shadow: 0 0 8px var(--red); flex-shrink: 0; }
+.dot.online { background: var(--green); box-shadow: 0 0 12px var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
 
-  .title {
-    font-family: 'Orbitron', monospace;
-    font-weight: 900;
-    font-size: 12px;
-    letter-spacing: 4px;
-    color: var(--green);
-    text-shadow: 0 0 12px var(--green);
-  }
+/* Input */
+.input-wrap { position: relative; margin-bottom: 12px; }
+.input-label { font-size: 9px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; display: block; }
+input[type="text"] { width: 100%; background: var(--s2); border: 1px solid var(--border); border-radius: 10px; color: var(--p2); font-family: 'Space Grotesk', sans-serif; font-size: 13px; padding: 12px 14px; outline: none; transition: all 0.2s; }
+input:focus { border-color: var(--p1); box-shadow: 0 0 0 3px rgba(155,77,255,0.15); }
 
-  .dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--red);
-    box-shadow: 0 0 8px var(--red);
-    transition: all 0.3s;
-  }
-  .dot.online { background: var(--green); box-shadow: 0 0 8px var(--green); animation: blink 2s infinite; }
+/* Button */
+.btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 3px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
+.btn-main { background: linear-gradient(135deg, var(--p3), var(--p1)); color: white; box-shadow: 0 4px 24px rgba(124,58,237,0.4); }
+.btn-main:active { transform: scale(0.97); box-shadow: 0 2px 12px rgba(124,58,237,0.3); }
 
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+/* Info rows */
+.info-grid { display: grid; gap: 8px; }
+.info-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--s2); border-radius: 8px; border: 1px solid var(--border); }
+.info-label { font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+.info-val { font-size: 11px; font-weight: 600; color: var(--p2); letter-spacing: 1px; }
+.info-val.on { color: var(--green); }
+.info-val.rec { color: var(--red); animation: pulse 1s infinite; }
 
-  .panel-body { padding: 20px; }
+/* Last command */
+.cmd-box { text-align: center; padding: 16px; background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(155,77,255,0.05)); border: 1px solid rgba(155,77,255,0.2); border-radius: 12px; margin-top: 4px; }
+.cmd-label { font-size: 9px; letter-spacing: 4px; color: var(--muted); margin-bottom: 8px; }
+.cmd-value { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; background: linear-gradient(135deg, var(--p1), var(--p2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; min-height: 28px; }
 
-  .info-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(13,37,53,0.8);
-    font-size: 12px;
-  }
+/* Log */
+.log-box { background: var(--s2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; height: 90px; overflow-y: auto; font-size: 10px; line-height: 1.8; }
+.log-box::-webkit-scrollbar { width: 3px; }
+.log-box::-webkit-scrollbar-thumb { background: var(--p3); border-radius: 3px; }
+.le { color: var(--muted); }
+.le.ok { color: var(--green); }
+.le.err { color: var(--red); }
+.le.cmd { color: var(--p2); }
+.le.warn { color: var(--yellow); }
 
-  .info-label { opacity: 0.5; letter-spacing: 2px; font-size: 10px; }
-  .info-val { color: var(--cyan); font-family: 'Orbitron', monospace; font-size: 11px; }
+/* Keep awake badge */
+.awake-badge { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; padding: 8px; border-radius: 8px; border: 1px solid rgba(155,77,255,0.2); font-size: 10px; letter-spacing: 2px; color: var(--muted); }
+.awake-badge.active { color: var(--p2); border-color: rgba(155,77,255,0.4); background: rgba(155,77,255,0.05); }
 
-  .cmd-display {
-    margin-top: 16px;
-    background: rgba(0,0,0,0.4);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 14px;
-    text-align: center;
-  }
-
-  .cmd-label { font-size: 9px; letter-spacing: 3px; opacity: 0.4; margin-bottom: 10px; }
-  .cmd-value {
-    font-family: 'Orbitron', monospace;
-    font-size: 20px;
-    color: var(--green);
-    text-shadow: 0 0 20px var(--green);
-    min-height: 30px;
-    transition: all 0.3s;
-    word-break: break-all;
-  }
-
-  .input-group { margin-bottom: 12px; }
-  .input-label { font-size: 10px; letter-spacing: 2px; opacity: 0.6; margin-bottom: 6px; display: block; }
-
-  input[type="text"] {
-    width: 100%;
-    background: rgba(0,245,255,0.05);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    color: var(--cyan);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 13px;
-    padding: 10px 12px;
-    outline: none;
-  }
-  input:focus { border-color: var(--green); }
-
-  .btn {
-    width: 100%;
-    padding: 12px;
-    background: transparent;
-    border: 1px solid var(--green);
-    border-radius: 3px;
-    color: var(--green);
-    font-family: 'Orbitron', monospace;
-    font-size: 11px;
-    letter-spacing: 3px;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-top: 4px;
-  }
-  .btn:active { background: rgba(0,255,136,0.1); box-shadow: 0 0 15px rgba(0,255,136,0.3); }
-
-  .log-box {
-    margin-top: 14px;
-    background: rgba(0,0,0,0.4);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 10px;
-    height: 100px;
-    overflow-y: auto;
-    font-size: 10px;
-    line-height: 1.7;
-  }
-
-  .log-entry { opacity: 0.7; }
-  .log-entry.ok { color: var(--green); }
-  .log-entry.err { color: var(--red); }
-  .log-entry.cmd { color: var(--cyan); }
-  .log-entry.warn { color: var(--orange); }
-
-  /* Camera preview overlay */
-  #camOverlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: black;
-    z-index: 9990;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  #camOverlay.active { display: flex; }
-  #camVideo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .cam-badge {
-    position: absolute;
-    top: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: 'Orbitron', monospace;
-    font-size: 10px;
-    letter-spacing: 3px;
-    color: var(--orange);
-    background: rgba(0,0,0,0.7);
-    padding: 6px 14px;
-    border: 1px solid var(--orange);
-    border-radius: 3px;
-    z-index: 9991;
-  }
-
-  /* Screen off overlay */
-  #screenOffOverlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: black;
-    z-index: 9980;
-  }
-  #screenOffOverlay.active { display: block; }
-
-  /* Background badge */
-  .bg-badge {
-    margin-top: 10px;
-    padding: 8px 12px;
-    border: 1px solid rgba(0,255,136,0.3);
-    border-radius: 3px;
-    font-size: 9px;
-    letter-spacing: 2px;
-    color: var(--green);
-    opacity: 0.6;
-    text-align: center;
-    background: rgba(0,255,136,0.04);
-  }
+/* Camera overlay */
+#camOverlay { display: none; position: fixed; inset: 0; background: black; z-index: 9990; flex-direction: column; align-items: center; justify-content: center; }
+#camOverlay.active { display: flex; }
+#camVideo { width: 100%; height: 100%; object-fit: cover; }
+.cam-pill { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(155,77,255,0.8); color: white; font-family: 'Syne', sans-serif; font-size: 10px; letter-spacing: 3px; padding: 6px 16px; border-radius: 20px; z-index: 9991; backdrop-filter: blur(10px); }
+#screenOffOverlay { display: none; position: fixed; inset: 0; background: black; z-index: 9980; }
+#screenOffOverlay.active { display: block; }
 </style>
 </head>
 <body>
-
-<!-- Camera Preview Overlay -->
 <div id="camOverlay">
-  <div class="cam-badge" id="camBadge">📷 KAMERA AKTIF</div>
+  <div class="cam-pill" id="camBadge">📷 KAMERA AKTIF</div>
   <video id="camVideo" autoplay playsinline muted></video>
 </div>
-
-<!-- Screen Off Overlay (tap to dismiss) -->
-<div id="screenOffOverlay" onclick="dismissScreenOff()"></div>
+<div id="screenOffOverlay" onclick="this.classList.remove('active')"></div>
 
 <div class="panel">
-  <div class="panel-header">
-    <div class="title">HP2·RECEIVER</div>
-    <div class="dot" id="dot"></div>
+  <div class="brand">
+    <div class="brand-name">IKWANEWERA</div>
+    <div class="brand-sub">Receiver · HP2 Terminal</div>
   </div>
 
-  <div class="panel-body">
-
-    <div class="input-group">
-      <span class="input-label">SERVER URL</span>
-      <input type="text" id="serverUrl" value="wss://android-remote.onrender.com">
+  <div class="card">
+    <div class="card-title">// Koneksi Server</div>
+    <div class="input-wrap">
+      <span class="input-label">WebSocket URL</span>
+      <input type="text" id="serverUrl" value="wss://165.245.185.184.nip.io">
     </div>
-    <button class="btn" id="connectBtn" onclick="toggleConnect()">CONNECT KE SERVER</button>
+    <button class="btn btn-main" id="connectBtn" onclick="toggleConnect()">CONNECT</button>
+    <div class="awake-badge" id="bgBadge">⚡ KEEP AWAKE: NONAKTIF</div>
+  </div>
 
-    <div class="bg-badge" id="bgBadge">⚙ KEEP AWAKE: NONAKTIF</div>
-
-    <div style="margin-top:16px">
-      <div class="info-row">
-        <span class="info-label">STATUS</span>
-        <span class="info-val" id="connStatus">OFFLINE</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">CONTROLLER</span>
-        <span class="info-val" id="ctrlStatus">BELUM CONNECT</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">SENTER</span>
-        <span class="info-val" id="torchStatus">OFF</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">KAMERA</span>
-        <span class="info-val" id="camStatus">OFF</span>
-      </div>
+  <div class="card">
+    <div class="card-title">// Status</div>
+    <div class="info-grid">
+      <div class="info-row"><span class="info-label">Status</span><span class="info-val" id="connStatus"><div class="dot" id="dot" style="display:inline-block"></div> OFFLINE</span></div>
+      <div class="info-row"><span class="info-label">Controller</span><span class="info-val" id="ctrlStatus">Menunggu...</span></div>
+      <div class="info-row"><span class="info-label">Senter</span><span class="info-val" id="torchStatus">OFF</span></div>
+      <div class="info-row"><span class="info-label">Kamera</span><span class="info-val" id="camStatus">OFF</span></div>
+      <div class="info-row"><span class="info-label">Audio Rec</span><span class="info-val" id="audioStatus">OFF</span></div>
+      <div class="info-row"><span class="info-label">GPS</span><span class="info-val" id="gpsStatus">—</span></div>
     </div>
+  </div>
 
-    <div class="cmd-display">
-      <div class="cmd-label">// PERINTAH TERAKHIR</div>
+  <div class="card">
+    <div class="cmd-box">
+      <div class="cmd-label">PERINTAH TERAKHIR</div>
       <div class="cmd-value" id="lastCmd">STANDBY</div>
     </div>
-
-    <div class="log-box" id="logBox"></div>
-
+    <div class="log-box" id="logBox" style="margin-top:12px"></div>
   </div>
 </div>
 
 <script>
-  let ws = null;
-  let connected = false;
+let ws=null,connected=false;
+let torchStream=null,torchTrack=null,torchFacing=null;
+let camStream=null,wakeLock=null,keepAwakeInterval=null;
+let mediaRecorder=null,audioChunks=[];
 
-  // Torch state
-  let torchStream = null;
-  let torchTrack = null;
-  let torchFacing = null;
+function log(msg,type='info'){
+  const box=document.getElementById('logBox');
+  const t=new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const el=document.createElement('div');
+  el.className='le '+type;
+  el.textContent=`[${t}] ${msg}`;
+  box.appendChild(el);
+  box.scrollTop=box.scrollHeight;
+}
+function send(data){if(ws&&ws.readyState===1)ws.send(JSON.stringify(data));}
 
-  // Camera state
-  let camStream = null;
+function toggleConnect(){
+  if(connected){ws.close();return;}
+  const url=document.getElementById('serverUrl').value.trim();
+  try{ws=new WebSocket(url);}catch(e){log('URL invalid','err');return;}
+  ws.onopen=()=>{
+    connected=true;
+    document.getElementById('dot').className='dot online';
+    document.getElementById('connStatus').innerHTML='<div class="dot online" style="display:inline-block;margin-right:6px"></div>ONLINE';
+    document.getElementById('connectBtn').textContent='DISCONNECT';
+    log('Terhubung ke server','ok');
+    ws.send(JSON.stringify({type:'register',role:'receiver'}));
+    startKeepAwake();
+  };
+  ws.onmessage=(e)=>{
+    let msg;try{msg=JSON.parse(e.data);}catch{return;}
+    if(msg.type==='registered'){log('Registered sebagai RECEIVER','ok');document.getElementById('ctrlStatus').textContent='Menunggu controller...';}
+    if(msg.type==='command')handleCommand(msg);
+  };
+  ws.onclose=()=>{
+    connected=false;
+    document.getElementById('connStatus').innerHTML='<div class="dot" style="display:inline-block;margin-right:6px"></div>OFFLINE';
+    document.getElementById('ctrlStatus').textContent='Terputus';
+    document.getElementById('connectBtn').textContent='CONNECT';
+    log('Terputus','err');
+    stopTorch();stopCamera();stopKeepAwake();stopAudio();
+  };
+  ws.onerror=()=>log('Gagal connect','err');
+}
 
-  // WakeLock state
-  let wakeLock = null;
-  let keepAwakeInterval = null;
-
-  // ==================
-  // LOG
-  // ==================
-  function log(msg, type = 'info') {
-    const box = document.getElementById('logBox');
-    const t = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    const el = document.createElement('div');
-    el.className = 'log-entry ' + type;
-    el.textContent = `[${t}] ${msg}`;
-    box.appendChild(el);
-    box.scrollTop = box.scrollHeight;
+function handleCommand(msg){
+  const a=msg.action;
+  document.getElementById('lastCmd').textContent=a.toUpperCase();
+  log('CMD: '+a,'cmd');
+  document.getElementById('ctrlStatus').textContent='AKTIF';
+  switch(a){
+    case 'torch': msg.state?startTorch(msg.facing||'back'):stopTorch(); break;
+    case 'torchOff': stopTorch(); break;
+    case 'camera': startCamera(msg.facing||'back'); break;
+    case 'camOff': stopCamera(); break;
+    case 'capturePhoto': capturePhoto(msg.facing||'back'); break;
+    case 'vibrate': doVibrate(); break;
+    case 'keepAwake': msg.state?startKeepAwake():stopKeepAwake(); break;
+    case 'screenOff': doScreenOff(); break;
+    case 'getStatus': reportStatus(); break;
+    case 'openUrl': openUrl(msg.url); break;
+    case 'getGPS': getGPS(); break;
+    case 'startAudio': startAudio(); break;
+    case 'stopAudio': stopAudio(); break;
   }
+}
 
-  function sendToServer(data) {
-    if (ws && ws.readyState === 1) ws.send(JSON.stringify(data));
-  }
+async function startTorch(facing){
+  await stopTorch(true);
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing==='front'?'user':'environment'}});
+    torchStream=stream;torchTrack=stream.getVideoTracks()[0];torchFacing=facing;
+    const cap=torchTrack.getCapabilities();
+    if(cap.torch){
+      await torchTrack.applyConstraints({advanced:[{torch:true}]});
+      log(`Senter ${facing==='front'?'DEPAN':'BELAKANG'} ON`,'ok');
+      send({type:'response',msg:`Senter ${facing==='front'?'Depan':'Belakang'} ON`});
+      document.getElementById('torchStatus').textContent=facing==='front'?'DEPAN ✦':'BELAKANG ✦';
+    }else{
+      torchTrack.stop();torchStream.getTracks().forEach(t=>t.stop());torchStream=null;torchTrack=null;
+      log('Torch tidak support','warn');send({type:'response',msg:'Torch tidak support'});
+    }
+  }catch(err){log('Gagal torch: '+err.message,'err');send({type:'response',msg:'Gagal: '+err.message});}
+}
 
-  // ==================
-  // WEBSOCKET
-  // ==================
-  function toggleConnect() {
-    if (connected) { ws.close(); return; }
+async function stopTorch(silent=false){
+  if(torchTrack){try{await torchTrack.applyConstraints({advanced:[{torch:false}]});}catch{}torchTrack.stop();torchTrack=null;}
+  if(torchStream){torchStream.getTracks().forEach(t=>t.stop());torchStream=null;}
+  torchFacing=null;
+  document.getElementById('torchStatus').textContent='OFF';
+  if(!silent){log('Senter OFF','ok');send({type:'response',msg:'Senter OFF'});}
+}
 
-    const url = document.getElementById('serverUrl').value.trim();
-    log('Connecting...');
-    try { ws = new WebSocket(url); } catch(e) { log('URL invalid', 'err'); return; }
+async function startCamera(facing){
+  await stopCamera(true);
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing==='front'?'user':'environment',width:{ideal:1280},height:{ideal:720}},audio:false});
+    camStream=stream;
+    const video=document.getElementById('camVideo');
+    video.srcObject=stream;
+    document.getElementById('camOverlay').classList.add('active');
+    document.getElementById('camBadge').textContent=facing==='front'?'🤳 KAMERA DEPAN':'📷 KAMERA BELAKANG';
+    document.getElementById('camStatus').textContent=facing==='front'?'DEPAN ✦':'BELAKANG ✦';
+    document.getElementById('camStatus').className='info-val on';
+    log(`Kamera ${facing==='front'?'DEPAN':'BELAKANG'} ON`,'ok');
+    send({type:'response',msg:`Kamera ${facing==='front'?'Depan':'Belakang'} ON`});
+  }catch(err){log('Gagal kamera: '+err.message,'err');send({type:'response',msg:'Gagal kamera: '+err.message});}
+}
 
-    ws.onopen = () => {
-      connected = true;
-      document.getElementById('dot').className = 'dot online';
-      document.getElementById('connStatus').textContent = 'ONLINE';
-      document.getElementById('connectBtn').textContent = 'DISCONNECT';
-      log('Terhubung ke server', 'ok');
-      ws.send(JSON.stringify({ type: 'register', role: 'receiver' }));
-      // Mulai keep awake otomatis saat connect
-      startKeepAwake();
+async function stopCamera(silent=false){
+  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
+  document.getElementById('camVideo').srcObject=null;
+  document.getElementById('camOverlay').classList.remove('active');
+  document.getElementById('camStatus').textContent='OFF';
+  document.getElementById('camStatus').className='info-val';
+  if(!silent){log('Kamera OFF','ok');send({type:'response',msg:'Kamera OFF'});}
+}
+
+async function capturePhoto(facing){
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing==='front'?'user':'environment',width:{ideal:1920},height:{ideal:1080}}});
+    const video=document.createElement('video');
+    video.srcObject=stream;video.autoplay=true;video.playsInline=true;video.muted=true;
+    await new Promise(r=>video.onloadedmetadata=r);
+    await new Promise(r=>setTimeout(r,800));
+    const canvas=document.createElement('canvas');
+    canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+    canvas.getContext('2d').drawImage(video,0,0);
+    stream.getTracks().forEach(t=>t.stop());
+    const dataUrl=canvas.toDataURL('image/jpeg',0.8);
+    log(`Foto ${facing} diambil`,'ok');
+    send({type:'photo',facing,data:dataUrl});
+  }catch(err){log('Gagal foto: '+err.message,'err');send({type:'response',msg:'Gagal foto: '+err.message});}
+}
+
+async function startAudio(){
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    audioChunks=[];
+    mediaRecorder=new MediaRecorder(stream);
+    mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};
+    mediaRecorder.onstop=()=>{
+      const blob=new Blob(audioChunks,{type:'audio/webm'});
+      const reader=new FileReader();
+      reader.onloadend=()=>{send({type:'audio',data:reader.result});log('Audio dikirim','ok');};
+      reader.readAsDataURL(blob);
+      stream.getTracks().forEach(t=>t.stop());
+      document.getElementById('audioStatus').textContent='OFF';
+      document.getElementById('audioStatus').className='info-val';
     };
+    mediaRecorder.start();
+    document.getElementById('audioStatus').textContent='REC ●';
+    document.getElementById('audioStatus').className='info-val rec';
+    log('Rekod audio mulai','ok');
+    send({type:'response',msg:'Audio REC ON'});
+  }catch(err){log('Gagal audio: '+err.message,'err');send({type:'response',msg:'Gagal audio: '+err.message});}
+}
 
-    ws.onmessage = (e) => {
-      let msg; try { msg = JSON.parse(e.data); } catch { return; }
-      if (msg.type === 'registered') {
-        log('Terdaftar sebagai RECEIVER', 'ok');
-        document.getElementById('ctrlStatus').textContent = 'MENUNGGU...';
-      }
-      if (msg.type === 'command') handleCommand(msg);
-    };
+function stopAudio(){
+  if(mediaRecorder&&mediaRecorder.state!=='inactive'){mediaRecorder.stop();log('Audio stop','ok');}
+}
 
-    ws.onclose = () => {
-      connected = false;
-      document.getElementById('dot').className = 'dot';
-      document.getElementById('connStatus').textContent = 'OFFLINE';
-      document.getElementById('ctrlStatus').textContent = 'TERPUTUS';
-      document.getElementById('connectBtn').textContent = 'CONNECT KE SERVER';
-      log('Terputus', 'err');
-      stopTorch();
-      stopCamera();
-      stopKeepAwake();
-    };
+function getGPS(){
+  if(!navigator.geolocation){log('GPS tidak support','err');send({type:'response',msg:'GPS tidak support'});return;}
+  document.getElementById('gpsStatus').textContent='...';
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      const lat=pos.coords.latitude.toFixed(6),lng=pos.coords.longitude.toFixed(6),acc=Math.round(pos.coords.accuracy);
+      document.getElementById('gpsStatus').textContent=`${lat}`;
+      log(`GPS: ${lat},${lng} ±${acc}m`,'ok');
+      send({type:'gps',lat,lng,accuracy:acc,mapsUrl:`https://maps.google.com/?q=${lat},${lng}`});
+    },
+    err=>{log('GPS gagal: '+err.message,'err');send({type:'response',msg:'GPS gagal'});document.getElementById('gpsStatus').textContent='GAGAL';},
+    {enableHighAccuracy:true,timeout:15000,maximumAge:0}
+  );
+}
 
-    ws.onerror = () => log('Gagal connect', 'err');
+function openUrl(url){
+  if(!url)return;
+  window.open(url,'_blank');
+  log('Buka URL: '+url,'ok');
+  send({type:'response',msg:'URL dibuka: '+url});
+}
+
+function doVibrate(){
+  if('vibrate'in navigator){navigator.vibrate([200,100,200,100,200]);log('Vibrasi OK','ok');send({type:'response',msg:'Vibrasi OK'});}
+  else{log('Vibrate tidak support','err');}
+}
+
+async function startKeepAwake(){
+  try{
+    if('wakeLock'in navigator){
+      wakeLock=await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release',()=>{if(connected)setTimeout(()=>startKeepAwake(),2000);});
+      log('Keep Awake aktif','ok');
+    }
+  }catch(e){log('WakeLock gagal','warn');}
+  if(!keepAwakeInterval){
+    keepAwakeInterval=setInterval(()=>{
+      if(connected&&ws&&ws.readyState===1)ws.send(JSON.stringify({type:'heartbeat'}));
+      if('wakeLock'in navigator&&(!wakeLock||wakeLock.released))navigator.wakeLock.request('screen').then(wl=>wakeLock=wl).catch(()=>{});
+    },15000);
   }
+  document.getElementById('bgBadge').textContent='⚡ KEEP AWAKE: AKTIF';
+  document.getElementById('bgBadge').className='awake-badge active';
+}
 
-  // ==================
-  // HANDLE COMMANDS
-  // ==================
-  function handleCommand(msg) {
-    const action = msg.action;
-    document.getElementById('lastCmd').textContent = action.toUpperCase();
-    log('Perintah diterima: ' + action, 'cmd');
-    document.getElementById('ctrlStatus').textContent = 'AKTIF';
+function stopKeepAwake(){
+  if(wakeLock&&!wakeLock.released){wakeLock.release().catch(()=>{});wakeLock=null;}
+  if(keepAwakeInterval){clearInterval(keepAwakeInterval);keepAwakeInterval=null;}
+  document.getElementById('bgBadge').textContent='⚡ KEEP AWAKE: NONAKTIF';
+  document.getElementById('bgBadge').className='awake-badge';
+}
 
-    switch(action) {
+function doScreenOff(){
+  document.getElementById('screenOffOverlay').classList.add('active');
+  log('Layar OFF','ok');send({type:'response',msg:'Layar OFF'});
+  setTimeout(()=>document.getElementById('screenOffOverlay').classList.remove('active'),60000);
+}
 
-      case 'torch':
-        // msg.facing = 'back' | 'front', msg.state = true/false
-        if (msg.state) {
-          startTorch(msg.facing || 'back');
-        } else {
-          stopTorch();
-        }
-        break;
+async function reportStatus(){
+  const data={platform:navigator.platform||'Android',connection:navigator.connection?.effectiveType||'unknown',online:navigator.onLine,battery:null,charging:null};
+  try{const b=await navigator.getBattery();data.battery=Math.round(b.level*100);data.charging=b.charging;}catch{}
+  send({type:'status',data});log('Status dikirim','ok');
+}
 
-      case 'torchOff':
-        stopTorch();
-        break;
-
-      case 'camera':
-        // msg.facing = 'back' | 'front'
-        startCamera(msg.facing || 'back');
-        break;
-
-      case 'camOff':
-        stopCamera();
-        break;
-
-      case 'vibrate':
-        doVibrate();
-        break;
-
-      case 'keepAwake':
-        if (msg.state) {
-          startKeepAwake();
-        } else {
-          stopKeepAwake();
-        }
-        break;
-
-      case 'screenOff':
-        doScreenOff();
-        break;
-
-      case 'getStatus':
-        reportStatus();
-        break;
-    }
+setInterval(()=>{if(connected)reportStatus();},30000);
+document.addEventListener('visibilitychange',async()=>{
+  if(document.visibilityState==='visible'&&connected&&'wakeLock'in navigator){
+    try{wakeLock=await navigator.wakeLock.request('screen');}catch{}
   }
-
-  // ==================
-  // TORCH (SENTER)
-  // ==================
-  async function startTorch(facing) {
-    // Stop existing torch first
-    await stopTorch(true);
-
-    try {
-      const facingMode = facing === 'front' ? 'user' : 'environment';
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode }
-      });
-      torchStream = stream;
-      torchTrack = stream.getVideoTracks()[0];
-      torchFacing = facing;
-
-      const capabilities = torchTrack.getCapabilities();
-      if (capabilities.torch) {
-        await torchTrack.applyConstraints({ advanced: [{ torch: true }] });
-        log(`Senter ${facing === 'front' ? 'DEPAN' : 'BELAKANG'} ON`, 'ok');
-        sendToServer({ type: 'response', msg: `Senter ${facing === 'front' ? 'Depan' : 'Belakang'} ON` });
-        document.getElementById('torchStatus').textContent = facing === 'front' ? 'DEPAN ON' : 'BLKNG ON';
-      } else {
-        // Torch not supported on this camera facing
-        torchTrack.stop();
-        torchStream.getTracks().forEach(t => t.stop());
-        torchStream = null; torchTrack = null;
-        log(`Torch tidak support di kamera ${facing}`, 'warn');
-        sendToServer({ type: 'response', msg: `Torch tidak support kamera ${facing}` });
-      }
-    } catch(err) {
-      log('Gagal akses kamera: ' + err.message, 'err');
-      sendToServer({ type: 'response', msg: 'Gagal akses kamera: ' + err.message });
-    }
-  }
-
-  async function stopTorch(silent = false) {
-    if (torchTrack) {
-      try { await torchTrack.applyConstraints({ advanced: [{ torch: false }] }); } catch {}
-      torchTrack.stop();
-      torchTrack = null;
-    }
-    if (torchStream) {
-      torchStream.getTracks().forEach(t => t.stop());
-      torchStream = null;
-    }
-    torchFacing = null;
-    document.getElementById('torchStatus').textContent = 'OFF';
-    if (!silent) {
-      log('Senter OFF', 'ok');
-      sendToServer({ type: 'response', msg: 'Senter OFF' });
-    }
-  }
-
-  // ==================
-  // KAMERA
-  // ==================
-  async function startCamera(facing) {
-    await stopCamera(true);
-
-    try {
-      const facingMode = facing === 'front' ? 'user' : 'environment';
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode, width: { ideal: 1280 }, height: { ideal: 720 } },
-        audio: false
-      });
-      camStream = stream;
-
-      const video = document.getElementById('camVideo');
-      video.srcObject = stream;
-      document.getElementById('camOverlay').classList.add('active');
-      document.getElementById('camBadge').textContent = facing === 'front' ? '🤳 KAMERA DEPAN AKTIF' : '📷 KAMERA BELAKANG AKTIF';
-      document.getElementById('camStatus').textContent = facing === 'front' ? 'DEPAN ON' : 'BLKNG ON';
-
-      log(`Kamera ${facing === 'front' ? 'DEPAN' : 'BELAKANG'} ON`, 'ok');
-      sendToServer({ type: 'response', msg: `Kamera ${facing === 'front' ? 'Depan' : 'Belakang'} ON` });
-    } catch(err) {
-      log('Gagal buka kamera: ' + err.message, 'err');
-      sendToServer({ type: 'response', msg: 'Gagal buka kamera: ' + err.message });
-    }
-  }
-
-  async function stopCamera(silent = false) {
-    if (camStream) {
-      camStream.getTracks().forEach(t => t.stop());
-      camStream = null;
-    }
-    const video = document.getElementById('camVideo');
-    video.srcObject = null;
-    document.getElementById('camOverlay').classList.remove('active');
-    document.getElementById('camStatus').textContent = 'OFF';
-    if (!silent) {
-      log('Kamera OFF', 'ok');
-      sendToServer({ type: 'response', msg: 'Kamera OFF' });
-    }
-  }
-
-  // ==================
-  // VIBRATE
-  // ==================
-  function doVibrate() {
-    if ('vibrate' in navigator) {
-      navigator.vibrate([200, 100, 200, 100, 200]);
-      log('Vibrasi OK', 'ok');
-      sendToServer({ type: 'response', msg: 'Vibrasi OK' });
-    } else {
-      log('Vibrasi tidak support', 'err');
-      sendToServer({ type: 'response', msg: 'Vibrasi tidak support' });
-    }
-  }
-
-  // ==================
-  // KEEP AWAKE / BACKGROUND
-  // ==================
-  async function startKeepAwake() {
-    // Coba WakeLock API (modern)
-    try {
-      if ('wakeLock' in navigator) {
-        wakeLock = await navigator.wakeLock.request('screen');
-        wakeLock.addEventListener('release', () => {
-          log('WakeLock dilepas sistem', 'warn');
-          // Coba re-acquire jika masih harusnya aktif
-          if (connected) {
-            setTimeout(() => { if (connected) startKeepAwake(); }, 2000);
-          }
-        });
-        log('Keep Awake (WakeLock) aktif', 'ok');
-        sendToServer({ type: 'response', msg: 'Keep Awake ON' });
-      }
-    } catch(e) {
-      log('WakeLock gagal: ' + e.message, 'warn');
-    }
-
-    // Fallback: NoSleep via hidden video trick
-    if (!keepAwakeInterval) {
-      keepAwakeInterval = setInterval(() => {
-        // Kirim heartbeat ke server supaya koneksi tetap hidup
-        if (connected && ws && ws.readyState === 1) {
-          ws.send(JSON.stringify({ type: 'heartbeat' }));
-        }
-        // Coba re-acquire wake lock kalau lepas
-        if ('wakeLock' in navigator && (!wakeLock || wakeLock.released)) {
-          navigator.wakeLock.request('screen').then(wl => {
-            wakeLock = wl;
-          }).catch(() => {});
-        }
-      }, 15000); // setiap 15 detik
-    }
-
-    document.getElementById('bgBadge').textContent = '⚙ KEEP AWAKE: AKTIF';
-    document.getElementById('bgBadge').style.color = 'var(--green)';
-    document.getElementById('bgBadge').style.borderColor = 'rgba(0,255,136,0.4)';
-  }
-
-  function stopKeepAwake() {
-    if (wakeLock && !wakeLock.released) {
-      wakeLock.release().catch(() => {});
-      wakeLock = null;
-    }
-    if (keepAwakeInterval) {
-      clearInterval(keepAwakeInterval);
-      keepAwakeInterval = null;
-    }
-    log('Keep Awake OFF', 'ok');
-    sendToServer({ type: 'response', msg: 'Keep Awake OFF' });
-    document.getElementById('bgBadge').textContent = '⚙ KEEP AWAKE: NONAKTIF';
-    document.getElementById('bgBadge').style.color = 'var(--green)';
-    document.getElementById('bgBadge').style.borderColor = 'rgba(0,255,136,0.3)';
-    document.getElementById('bgBadge').style.opacity = '0.5';
-  }
-
-  // ==================
-  // SCREEN OFF
-  // ==================
-  function doScreenOff() {
-    // Layar gelap total — tap untuk dismiss
-    document.getElementById('screenOffOverlay').classList.add('active');
-    log('Layar OFF (tap untuk nyalakan)', 'ok');
-    sendToServer({ type: 'response', msg: 'Layar OFF' });
-
-    // Auto dismiss setelah 60 detik kalau ga disentuh
-    setTimeout(() => dismissScreenOff(), 60000);
-  }
-
-  function dismissScreenOff() {
-    document.getElementById('screenOffOverlay').classList.remove('active');
-    log('Layar ON (tap dismiss)', 'ok');
-    sendToServer({ type: 'response', msg: 'Layar ON (manual)' });
-  }
-
-  // ==================
-  // STATUS REPORT
-  // ==================
-  async function reportStatus() {
-    const data = {
-      platform: navigator.platform || navigator.userAgentData?.platform || 'Android',
-      connection: navigator.connection?.effectiveType || navigator.connection?.type || 'unknown',
-      online: navigator.onLine,
-      battery: null,
-      charging: null,
-      torch: torchFacing ? `ON (${torchFacing})` : 'OFF',
-      camera: camStream ? 'ON' : 'OFF',
-      keepAwake: wakeLock && !wakeLock.released ? true : false
-    };
-
-    try {
-      const batt = await navigator.getBattery();
-      data.battery = Math.round(batt.level * 100);
-      data.charging = batt.charging;
-    } catch {}
-
-    sendToServer({ type: 'status', data });
-    log('Status dikirim ke controller', 'ok');
-  }
-
-  // Auto-report status setiap 30 detik
-  setInterval(() => { if (connected) reportStatus(); }, 30000);
-
-  // Re-acquire wakeLock saat page visibility berubah (balik ke foreground)
-  document.addEventListener('visibilitychange', async () => {
-    if (document.visibilityState === 'visible' && connected) {
-      log('App kembali ke foreground', 'ok');
-      if ('wakeLock' in navigator && connected) {
-        try {
-          wakeLock = await navigator.wakeLock.request('screen');
-        } catch {}
-      }
-    }
-  });
+});
 </script>
 </body>
 </html>
